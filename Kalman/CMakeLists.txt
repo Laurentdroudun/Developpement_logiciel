@@ -11,13 +11,23 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(kalman src/kalman.cpp)
-target_include_directories(kalman PUBLIC
+# add_executable(kalman src/kalman.cpp)
+add_executable(main_test src/main_test.cpp)
+
+# target_include_directories(kalman PUBLIC
+#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#   $<INSTALL_INTERFACE:include>)
+# target_compile_features(kalman PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+target_include_directories(main_test PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_features(kalman PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(main_test PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
-install(TARGETS kalman
+# install(TARGETS kalman
+#   DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS main_test
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

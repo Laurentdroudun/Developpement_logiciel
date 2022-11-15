@@ -1,0 +1,4 @@
+source;share/Kalman/local_setup.bash
+source;share/Kalman/local_setup.dsv
+source;share/Kalman/local_setup.sh
+source;share/Kalman/local_setup.zsh
