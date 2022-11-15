@@ -18,34 +18,29 @@ void Kalman(Vector3d& X_pred, Matrix3d& G_pred, Vector3d u, Vector3d y, Matrix3d
 }
 
 
-Vector3d f(Vector3d X, Vector3d u) {
-    X = X+u-u;
-    return X;
+void lissajous(Vector3d& X, double t) {
+    X << cos(t), 1./2.*sin(2*t), 0;
 }
 
 
 
 int main() {
-    Vector3d u; u << 0.5, 2, 1;
+    Vector3d u; u << 0, 0, 0;
     Vector3d y; y << 1, 1, 5;
     Matrix3d G_a = Matrix3d::Random();
-    cout << G_a << endl;
     Matrix3d G_b = Matrix3d::Random();
-    cout << G_b <<endl;
     Matrix3d A = Matrix3d::Random();
     Matrix3d C = Matrix3d::Random(); 
 
-    Vector3d X0; X0 << 10, 5, 0;
     double eps = 10;
-    Matrix3d G_x0 = 1/(eps*eps) * Matrix3d::Random();  
+    Matrix3d G_x0 = 1/(eps*eps) * Matrix3d::Random(); Matrix3d G_x = G_x0;
 
-    Vector3d X = X0;
-    Matrix3d G_x = G_x0;
+    Vector3d X;
 
     double dt = 0.01;
 
     for (double i=0; i<0.1; i+=dt) {
-        X = X + f(X,u)*dt;
+        lissajous(X, i);
         Kalman(X, G_x, u, y, G_a, G_b, A, C);    
     }
 
