@@ -35,8 +35,9 @@ geometry_msgs::msg::PoseStamped robot_pose;
 
 
 class QuadranListener : public rclcpp::Node {
-    public : QuadranListener() : Node("quad_sub") {
-        subscription_quad = this->create_subscription<geometry_msgs::msg::PoseStamped>("/quad/pose", 10, std::bind(&QuadranListener::quad_callback, this, _1));
+    public : 
+        QuadranListener() : Node("quad_sub") {
+            subscription_quad = this->create_subscription<geometry_msgs::msg::PoseStamped>("/quad/pose", 10, std::bind(&QuadranListener::quad_callback, this, _1));
     }
 
     private : 
@@ -63,9 +64,6 @@ void Kalman_simple(Vector3d& X_pred, Matrix3d& G_pred, Vector3d u, Vector3d y, M
     G_pred = A*G_up*A.transpose() + G_a;
 }
 
-void lissajous(Vector3d& X, double t) {
-    X << cos(t), 1./2.*sin(2*t), 0;
-}
 
 
 
@@ -78,8 +76,6 @@ int main(int argc, char * argv[]) {
 
     visualization_msgs::msg::Marker robot_marker;
 
-    double t = 0;
-    double dt = 0.01;
     u << 0, 0, 0;
     y << 0, 0, 0;
 
@@ -107,9 +103,7 @@ int main(int argc, char * argv[]) {
 
 
         //CONTROL
-        lissajous(X, t);
         Kalman_simple(X, G_x, u, y, G_a, G_b, A, C);  
-        t += dt;
 
 
         loop_rate.sleep();

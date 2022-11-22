@@ -35,13 +35,16 @@ endif()
 
 
 add_executable(kalman src/kalman.cpp)
+add_executable(simulation src/simulation.cpp)
 
 
 ament_target_dependencies(kalman rclcpp geometry_msgs eigen3_cmake_module visualization_msgs)
+ament_target_dependencies(simulation rclcpp geometry_msgs)
 
 
 install(TARGETS 
   kalman
+  simulation
   DESTINATION lib/${PROJECT_NAME})
 
 
