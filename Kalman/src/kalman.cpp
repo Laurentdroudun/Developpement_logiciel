@@ -18,8 +18,8 @@ using Eigen::Vector3d;
 using namespace std;
 
 
-Vector3d u; //u << 0, 0, 0;
-Vector3d y; //y << 1, 1, 5;
+Vector3d u;
+Vector3d y;
 Vector3d X;
 
 Matrix3d G_a = Matrix3d::Random();
@@ -34,9 +34,9 @@ geometry_msgs::msg::PoseStamped robot_pose;
 
 
 
-class quad_sub : public rclcpp::Node {
-    public : quad_sub() : Node("quad_sub") {
-        subscription_quad = this->create_subscription<geometry_msgs::msg::PoseStamped>("/quad/pose", 10, std::bind(&quad_sub::quad_callback, this, _1));
+class QuadranListener : public rclcpp::Node {
+    public : QuadranListener() : Node("quad_sub") {
+        subscription_quad = this->create_subscription<geometry_msgs::msg::PoseStamped>("/quad/pose", 10, std::bind(&QuadranListener::quad_callback, this, _1));
     }
 
     private : 
@@ -53,7 +53,7 @@ class quad_sub : public rclcpp::Node {
 };
 
 
-void Kalman(Vector3d& X_pred, Matrix3d& G_pred, Vector3d u, Vector3d y, Matrix3d G_a, Matrix3d G_b, Matrix3d A, Matrix3d C) {
+void Kalman_simple(Vector3d& X_pred, Matrix3d& G_pred, Vector3d u, Vector3d y, Matrix3d G_a, Matrix3d G_b, Matrix3d A, Matrix3d C) {
     Matrix3d S = C*G_pred*C.transpose() + G_b;
     Matrix3d K = G_pred*C.transpose()*S.inverse();
     Vector3d y_tilt = y - C*X_pred;
@@ -73,8 +73,8 @@ int main(int argc, char * argv[]) {
     rclcpp::init(argc,argv);
     rclcpp::Rate loop_rate(10);
 
-    auto node = std::make_shared<quad_sub>();
-    //auto marker_pub = node->create_publisher<visualization_msgs::msg::Marker>("/quad/simu", 1000);
+    auto node = std::make_shared<QuadranListener>();
+    auto marker_pub = node->create_publisher<visualization_msgs::msg::Marker>("/quad/simu", 1000);
 
     visualization_msgs::msg::Marker robot_marker;
 
@@ -88,7 +88,7 @@ int main(int argc, char * argv[]) {
 
         //SIMULATION
         robot_marker.header.frame_id = "map";
-        robot_marker.header.stamp = quad_sub().get_clock()->now();
+        robot_marker.header.stamp = QuadranListener().get_clock()->now();
         robot_marker.id = 0;
         robot_marker.type = visualization_msgs::msg::Marker::MESH_RESOURCE;
         robot_marker.action = visualization_msgs::msg::Marker::ADD;
@@ -103,12 +103,12 @@ int main(int argc, char * argv[]) {
         robot_marker.color.b = 1.0;
         robot_marker.mesh_resource = "package://Kalman/meshs/boat.dae";
 
-        //marker_pub->publish(robot_marker);
+        marker_pub->publish(robot_marker);
 
 
         //CONTROL
         lissajous(X, t);
-        Kalman(X, G_x, u, y, G_a, G_b, A, C);  
+        Kalman_simple(X, G_x, u, y, G_a, G_b, A, C);  
         t += dt;
 
 
